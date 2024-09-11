@@ -3,4 +3,5 @@ enum EColors {
   grey, //secondary text
   blue, // currency text
   black,
+  background,
 }

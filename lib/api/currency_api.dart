@@ -1,13 +1,15 @@
 import "dart:convert";
 
+import "package:currency_converter/api/amount.dart";
 import "package:currency_converter/api/currency.dart";
 import "package:flutter/material.dart";
 import "package:http/http.dart" as http;
 
 class CurrencyApi extends ChangeNotifier {
   List<Currency> currencyList = [];
-  Currency? _first;
-  Currency? _second;
+  List<Currency> initialCurrencyList = [];
+  Amount? _first;
+  Amount? _second;
   getDB() async {
     List<Currency> list = [];
     dynamic data = (await http.get(
@@ -18,17 +20,35 @@ class CurrencyApi extends ChangeNotifier {
     list = json
         .map((element) => Currency.parseJson(element as Map<String, dynamic>))
         .toList();
-    currencyList = list;
+    initialCurrencyList = list;
+    initialCurrencyList.add(
+      Currency(
+        ccy: "UZS",
+        rate: "1.0",
+        ccyNmEn: "Uzbekistan sum",
+        ccyNmRu: "Узбекский сум",
+        ccyNmUz: "O'zbek so'mi",
+        ccyNmUzc: "Узбек суми",
+        code: "76",
+        date: DateTime.now(),
+        diff: 1,
+        id: 76,
+        nominal: "1",
+      ),
+    );
+    currencyList = initialCurrencyList;
     return list;
   }
 
-  Currency? get first => _first;
-  Currency? get second => _second;
-  set first(Currency? c) {
-    first = c;
+  void changeCurrencies(Amount first, Amount second) {
+    _first = first;
+    _second = second;
   }
 
-  set second(Currency? c) {
-    second = c;
+  void filter(bool Function(Currency) test) {
+    currencyList = initialCurrencyList.where(test).toList();
   }
+
+  Amount? get first => _first;
+  Amount? get second => _second;
 }

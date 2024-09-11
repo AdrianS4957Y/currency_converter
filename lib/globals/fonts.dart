@@ -12,6 +12,7 @@ class Fonts {
     EColors.blue: const Color(0xFF26278D),
     EColors.darkBlue: const Color(0xFF1F2261),
     EColors.black: Colors.black,
+    EColors.background: const Color(0xFFF6F6F6)
   };
   static roboto({
     Color? color = Colors.white,

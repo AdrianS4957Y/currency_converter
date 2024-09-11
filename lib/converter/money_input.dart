@@ -1,6 +1,8 @@
 import 'package:currency_converter/api/amount.dart';
+import 'package:currency_converter/api/currency.dart';
 import 'package:currency_converter/globals/enum_colors.dart';
 import 'package:currency_converter/globals/fonts.dart';
+import 'package:currency_converter/search/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,11 +10,13 @@ class MoneyInput extends StatefulWidget {
   final String header;
   final Amount amount;
   final void Function(String) onChange;
+  final List<Currency> selected;
   const MoneyInput({
     super.key,
     required this.header,
     required this.amount,
     required this.onChange,
+    required this.selected,
   });
 
   @override
@@ -40,15 +44,6 @@ class MoneyInputState extends State<MoneyInput> {
     super.dispose();
   }
 
-  void _onTextChanged(String newText, Function onChange) {
-    final cursorPosition = controller.selection;
-    onChange();
-    setState(() {
-      controller.text = newText;
-      controller.selection = cursorPosition;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     controller.text = widget.amount.fixedAmount;
@@ -64,7 +59,16 @@ class MoneyInputState extends State<MoneyInput> {
             Row(
               children: [
                 GestureDetector(
-                  onTapDown: (details) {},
+                  onTapDown: (details) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Search(
+                            selectedCurrencies: widget.selected,
+                            currencyThatShouldBeChanged: widget.amount.currency,
+                          ),
+                        ));
+                  },
                   child: Row(
                     children: [
                       Image.asset(

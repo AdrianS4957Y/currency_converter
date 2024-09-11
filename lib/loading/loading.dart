@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:currency_converter/api/amount.dart';
 import 'package:currency_converter/api/currency_api.dart';
 import 'package:currency_converter/globals/fonts.dart';
 import 'package:currency_converter/globals/globals.dart';
@@ -32,6 +33,8 @@ class LoadingState extends State<Loading> {
       }
       await provider.getDB();
     }).then((response) {
+      provider.changeCurrencies(Amount(provider.currencyList.first),
+          Amount(provider.currencyList.last));
       Navigator.pushNamed(context, Routes.converter);
     });
     super.initState();

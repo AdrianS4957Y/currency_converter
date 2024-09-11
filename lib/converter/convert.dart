@@ -18,17 +18,18 @@ class Convert extends StatefulWidget {
 class ConvertState extends State<Convert> {
   late Amount from;
   late Amount to;
-
+  late CurrencyApi provider;
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<CurrencyApi>(context, listen: false);
-    from = Amount(provider.currencyList.first);
-    to = Amount(provider.currencyList.last);
+    provider = Provider.of<CurrencyApi>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    from = provider.first!;
+    to = provider.second!;
+    to.amount = from.convert(to.currency);
     return SingleChildScrollView(
       child: SizedBox(
         child: Column(
@@ -41,10 +42,12 @@ class ConvertState extends State<Convert> {
               amount: from,
               onChange: (p0) {
                 setState(() {
-                  from.amount = double.parse(p0);
-                  to.amount = from.convert(to.currency);
+                  provider.first!.amount = double.parse(p0);
+                  provider.second!.amount =
+                      provider.first!.convert(provider.second!.currency);
                 });
               },
+              selected: [from.currency, to.currency],
             ),
             Padding(
               padding: EdgeInsets.symmetric(
@@ -53,9 +56,10 @@ class ConvertState extends State<Convert> {
               child: Swap(
                 onClick: (details) {
                   setState(() {
-                    Amount temp = from;
-                    from = to;
-                    to = temp;
+                    provider.changeCurrencies(to, from);
+                    // Amount temp = from;
+                    // from = to;
+                    // to = temp;
                   });
                 },
               ),
@@ -65,10 +69,12 @@ class ConvertState extends State<Convert> {
               amount: to,
               onChange: (p0) {
                 setState(() {
-                  to.amount = double.parse(p0);
-                  from.amount = to.convert(from.currency);
+                  provider.second!.amount = double.parse(p0);
+                  provider.first!.amount =
+                      provider.second!.convert(provider.first!.currency);
                 });
               },
+              selected: [from.currency, to.currency],
             ),
             ChangeRate(
               first: from,
